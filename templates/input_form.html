@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction - Health Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #2c3e50, #3498db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .input-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .method-info {
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .method-info h3 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .method-info p {
+            color: #7f8c8d;
+            margin-bottom: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        .form-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-label i {
+            color: #3498db;
+            font-size: 1.2rem;
+        }
+        
+        .form-control {
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
+            transform: translateY(-2px);
+            background: white;
+        }
+        
+        .input-group-text {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            color: #7f8c8d;
+            font-weight: 500;
+            padding: 0 1.2rem;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .result-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 90%;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .close-result {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-result:hover {
+            color: #2c3e50;
+            transform: rotate(90deg);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        .progress {
+            height: 1rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .progress-bar {
+            border-radius: 1rem;
+            transition: width 1s ease-in-out;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #3498db;
+            transform: translateX(-5px);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 992px) {
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">
+            <i class="bi bi-arrow-left"></i> Back to Methods
+        </a>
+        
+        <div class="header">
+            <h1>Diabetes Risk Assessment</h1>
+            <p>Enter your health information below to get a personalized prediction using our advanced analysis methods.</p>
+        </div>
+        
+        <div class="input-card">
+            <div class="method-info">
+                <h3>
+                    {% if method == 'logistic' %}
+                        Logistic Regression - Simple Yes/No Diagnosis
+                    {% elif method == 'polynomial' %}
+                        Polynomial Regression - Risk Percentage Analysis
+                    {% else %}
+                        K-Nearest Neighbors - Similar Cases Comparison
+                    {% endif %}
+                </h3>
+                <p>
+                    {% if method == 'logistic' %}
+                        Get a straightforward diagnosis based on your health data using our logistic regression model.
+                    {% elif method == 'polynomial' %}
+                        Understand your risk level with detailed percentage analysis using polynomial regression.
+                    {% else %}
+                        Compare your case with similar patient profiles using K-Nearest Neighbors algorithm.
+                    {% endif %}
+                </p>
+            </div>
+
+            <form id="predictionForm">
+                {% if method == 'logistic' %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="blood_sugar" class="form-label">
+                            <i class="bi bi-droplet"></i> Blood Sugar Level
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="blood_sugar" required min="50" max="300" placeholder="Enter blood sugar">
+                            <span class="input-group-text">mg/dL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bmi" class="form-label">
+                            <i class="bi bi-speedometer2"></i> BMI
+                        </label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" class="form-control" id="bmi" required min="10" max="50" placeholder="Enter your BMI">
+                            <span class="input-group-text">kg/m²</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% elif method == 'polynomial' %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="blood_sugar" class="form-label">
+                            <i class="bi bi-droplet"></i> Blood Sugar Level
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="blood_sugar" required min="50" max="300" placeholder="Enter blood sugar">
+                            <span class="input-group-text">mg/dL</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="age" class="form-label">
+                            <i class="bi bi-person"></i> Age
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="age" required min="1" max="120" placeholder="Enter your age">
+                            <span class="input-group-text">years</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="blood_sugar" class="form-label">
+                            <i class="bi bi-droplet"></i> Blood Sugar
+                        </label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="blood_sugar" required min="50" max="300" placeholder="Enter blood sugar">
+                            <span class="input-group-text">mg/dL</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bmi" class="form-label">
+                            <i class="bi bi-speedometer2"></i> BMI
+                        </label>
+                        <div class="input-group">
+                            <input type="number" step="0.1" class="form-control" id="bmi" required min="10" max="50" placeholder="Enter your BMI">
+                            <span class="input-group-text">kg/m²</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary btn-submit">
+                    <i class="bi bi-search me-2"></i>Get Prediction
+                </button>
+            </form>
+
+            <div class="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+
+            <div class="result-modal" id="resultModal">
+                <div class="result-content">
+                    <button class="close-result" onclick="closeResult()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                    <div id="resultContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closeResult() {
+            document.getElementById('resultModal').style.display = 'none';
+        }
+
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loading = document.querySelector('.loading');
+            const resultModal = document.getElementById('resultModal');
+            const resultContent = document.getElementById('resultContent');
+            
+            loading.style.display = 'block';
+            resultModal.style.display = 'none';
+
+            // Get the current method from the URL
+            const method = window.location.pathname.split('/').pop();
+            
+            // Collect data based on the method
+            let data = {};
+            
+            switch(method) {
+                case 'logistic':
+                    data = {
+                        blood_sugar: document.getElementById('blood_sugar').value,
+                        bmi: document.getElementById('bmi').value
+                    };
+                    break;
+                case 'polynomial':
+                    data = {
+                        blood_sugar: document.getElementById('blood_sugar').value
+                    };
+                    break;
+                case 'knn':
+                    data = {
+                        age: document.getElementById('age').value,
+                        blood_sugar: document.getElementById('blood_sugar').value,
+                        bmi: document.getElementById('bmi').value
+                    };
+                    break;
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        method: method
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                
+                let resultHtml = '';
+                
+                switch(method) {
+                    case 'logistic':
+                        resultHtml = `
+                            <div class="alert ${result.logistic_prediction ? 'alert-danger' : 'alert-success'}">
+                                <h4 class="mb-3">Diagnosis Result</h4>
+                                <p class="mb-0">Based on your health information, you are <strong>${result.logistic_prediction ? 'likely' : 'unlikely'}</strong> to have diabetes.</p>
+                                <div class="accuracy-info mt-3">
+                                    <small>Model Accuracy: <strong>${result.model_accuracy}%</strong></small>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                    case 'polynomial':
+                        resultHtml = `
+                            <div class="alert alert-warning">
+                                <h4 class="mb-3">Risk Assessment</h4>
+                                <p class="mb-0">Your risk of developing diabetes is: <strong>${result.risk_percentage}%</strong></p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" role="progressbar" 
+                                         style="width: ${result.risk_percentage}%" 
+                                         aria-valuenow="${result.risk_percentage}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        ${result.risk_percentage}%
+                                    </div>
+                                </div>
+                                <div class="accuracy-info mt-3">
+                                    <small>Model Accuracy: <strong>${result.model_accuracy}%</strong></small>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                    case 'knn':
+                        resultHtml = `
+                            <div class="alert alert-info">
+                                <h4 class="mb-3">Risk Assessment</h4>
+                                <p class="mb-0">Based on similar cases in our database:</p>
+                                <div class="mt-3">
+                                    <h5 class="text-${result.risk_level.includes('High') ? 'danger' : result.risk_level.includes('Moderate') ? 'warning' : 'success'}">
+                                        <i class="bi bi-${result.risk_level.includes('High') ? 'exclamation-triangle' : result.risk_level.includes('Moderate') ? 'exclamation-circle' : 'check-circle'}"></i>
+                                        ${result.risk_level}
+                                    </h5>
+                                    <p class="mt-2 mb-0"><small>Similarity score: ${result.similarity_score} out of 1.0</small></p>
+                                </div>
+                                <div class="accuracy-info mt-3">
+                                    <small>Model Accuracy: <strong>${result.model_accuracy}%</strong></small>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                }
+
+                resultContent.innerHTML = resultHtml;
+                resultModal.style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                resultContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h4 class="mb-3">Error</h4>
+                        <p class="mb-0">An error occurred while processing your request. Please try again.</p>
+                        <small>Error details: ${error.message}</small>
+                    </div>
+                `;
+                resultModal.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 
